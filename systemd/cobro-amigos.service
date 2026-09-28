@@ -1,0 +1,16 @@
+[Unit]
+Description=Cobro Amigos - bot de Telegram y scheduler mensual
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=juan
+WorkingDirectory=/home/juan/cobro-amigos
+EnvironmentFile=/home/juan/cobro-amigos/.env
+ExecStart=/usr/bin/node /home/juan/cobro-amigos/dist/index.js
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target

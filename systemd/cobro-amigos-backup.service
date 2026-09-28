@@ -1,0 +1,9 @@
+[Unit]
+Description=Backup diario de la base de cobro-amigos
+
+[Service]
+Type=oneshot
+User=juan
+WorkingDirectory=/home/juan/cobro-amigos
+EnvironmentFile=/home/juan/cobro-amigos/.env
+ExecStart=/usr/bin/node /home/juan/cobro-amigos/dist/backup.js
