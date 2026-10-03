@@ -11,6 +11,7 @@ import {
   ultimoMesConfirmado,
   mesActual,
   nombreMes,
+  cancelarMesCompleto
 } from "../services/mes";
 import { enviarMailsDelMes } from "../services/envios";
 import {
@@ -76,6 +77,7 @@ export async function preguntarQuienPago(): Promise<void> {
 bot.on("message:text").filter(
   (ctx) => {
     const mes = mesActual();
+    if (ctx.message.text.startsWith("/")) return false
     return !!mes && mes.estado === "pendiente";
   },
   async (ctx) => {
@@ -111,7 +113,7 @@ bot.on("message:text").filter(
     }
 
     const actualizado = proponerPrecio(mes.id, monto);
-    const cantidadPersonas = listarActivos().length;
+    const cantidadPersonas = 6;
     await ctx.reply(
       `Total ${formatoPesos(monto)}, cuota ${formatoPesos(
         actualizado.cuota_propuesta!
@@ -299,4 +301,19 @@ bot.command("resetear_confirmar", async (ctx) => {
   db.exec("DELETE FROM amigos");
   db.exec("DELETE FROM sqlite_sequence"); // reinicia los autoincrement a 1
   await ctx.reply("Listo, base reseteada. Corré el seed de nuevo si hace falta.");
+});
+
+
+bot.command("cancelarmes", async (ctx) => {
+  const mes = mesActual();
+  if (!mes) {
+    await ctx.reply("No hay ningún mes en curso.");
+    return;
+  }
+  if (mes.estado === "confirmado" || mes.estado === "enviado") {
+    await ctx.reply("Este mes ya fue confirmado, no se puede cancelar así. Si hace falta corregirlo, avisame y lo vemos.");
+    return;
+  }
+  cancelarMesCompleto(mes.id);
+  await ctx.reply("Cancelado. Ya podés agregar/sacar amigos y arrancar de nuevo con /iniciarmes.");
 });
