@@ -9,10 +9,15 @@ export function teclaUsarMismoPrecio(): InlineKeyboard {
   return new InlineKeyboard().text("Usar mismo monto", "usar_mismo_precio");
 }
 
-export function teclaPagos(deudores: { amigo: Amigo; deuda: number }[]): InlineKeyboard {
+export function teclaPagos(
+  deudores: { amigo: Amigo; deuda: number }[],
+  seleccionados: Set<number> = new Set()
+): InlineKeyboard {
   const teclado = new InlineKeyboard();
   for (const { amigo, deuda } of deudores) {
-    teclado.text(`${amigo.nombre} (debe $${deuda})`, `pagar_${amigo.id}`).row();
+    const marca = seleccionados.has(amigo.id) ? "☑" : "☐";
+    teclado.text(`${marca} ${amigo.nombre} (debe $${deuda})`, `toggle_pago_${amigo.id}`).row();
   }
+  teclado.text(`✅ Confirmar pagos (${seleccionados.size})`, "confirmar_pagos");
   return teclado;
 }

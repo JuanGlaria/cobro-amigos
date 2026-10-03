@@ -6,9 +6,9 @@ Wants=network-online.target
 [Service]
 Type=simple
 User=juan
-WorkingDirectory=/home/juan/cobro-amigos
-EnvironmentFile=/home/juan/cobro-amigos/.env
-ExecStart=/usr/bin/node /home/juan/cobro-amigos/dist/index.js
+WorkingDirectory=/home/juan/projects/cobro-amigos
+EnvironmentFile=/home/juan/projects/cobro-amigos/.env
+ExecStart=/usr/bin/node /home/juan/projects/cobro-amigos/dist/index.js
 Restart=on-failure
 RestartSec=10
 

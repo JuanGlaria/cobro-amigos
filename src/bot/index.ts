@@ -68,7 +68,7 @@ export async function preguntarQuienPago(): Promise<void> {
     await bot.api.sendMessage(config.telegramChatId, "Nadie debe nada por ahora.");
     return;
   }
-  await bot.api.sendMessage(config.telegramChatId, "¿Quién pagó? Tocá para marcar.", {
+  await bot.api.sendMessage(config.telegramChatId, "¿Quién pagó? Tildá a los que pagaron y tocá Confirmar.", {
     reply_markup: teclaPagos(deudores),
   });
 }
@@ -149,14 +149,33 @@ bot.callbackQuery("cancelar_precio", async (ctx) => {
   await ctx.editMessageText("Cancelado. Mandame el monto correcto cuando quieras.");
 });
 
-bot.callbackQuery(/^pagar_(\d+)$/, async (ctx) => {
+// Selección de pagados por mensaje (messageId -> ids de amigos tildados). Se pierde al reiniciar.
+const seleccionPagos = new Map<number, Set<number>>();
+
+bot.callbackQuery(/^toggle_pago_(\d+)$/, async (ctx) => {
   const amigoId = Number(ctx.match[1]);
-  const pagado = marcarPagado(amigoId);
-  if (pagado === 0) {
-    await ctx.answerCallbackQuery("Ya no debía nada.");
+  const msgId = ctx.callbackQuery.message?.message_id;
+  if (msgId === undefined) return;
+  const seleccion = seleccionPagos.get(msgId) ?? new Set<number>();
+  if (!seleccion.delete(amigoId)) seleccion.add(amigoId);
+  seleccionPagos.set(msgId, seleccion);
+  await ctx.answerCallbackQuery();
+  await ctx.editMessageReplyMarkup({ reply_markup: teclaPagos(listarDeudas(), seleccion) });
+});
+
+bot.callbackQuery("confirmar_pagos", async (ctx) => {
+  const msgId = ctx.callbackQuery.message?.message_id;
+  const seleccion = (msgId !== undefined && seleccionPagos.get(msgId)) || new Set<number>();
+  if (seleccion.size === 0) {
+    await ctx.answerCallbackQuery("No tildaste a nadie.");
     return;
   }
-  await ctx.answerCallbackQuery("Marcado como pagado");
+  let marcados = 0;
+  for (const amigoId of seleccion) {
+    if (marcarPagado(amigoId) > 0) marcados++;
+  }
+  if (msgId !== undefined) seleccionPagos.delete(msgId);
+  await ctx.answerCallbackQuery(`Marcados como pagados: ${marcados}`);
   const deudores = listarDeudas();
   if (deudores.length === 0) {
     await ctx.editMessageText("Marcado. Ya no queda nadie debiendo. 🎉");
@@ -175,6 +194,17 @@ bot.command("deudas", async (ctx) => {
   }
   const texto = deudores.map((d) => `${d.amigo.nombre}: ${formatoPesos(d.deuda)}`).join("\n");
   await ctx.reply(texto);
+});
+
+bot.command("pagos", async (ctx) => {
+  const deudores = listarDeudas();
+  if (deudores.length === 0) {
+    await ctx.reply("Nadie debe nada.");
+    return;
+  }
+  await ctx.reply("¿Quién pagó? Tildá a los que pagaron y tocá Confirmar.", {
+    reply_markup: teclaPagos(deudores),
+  });
 });
 
 bot.command("estado", async (ctx) => {
