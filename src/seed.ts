@@ -10,11 +10,11 @@ interface AmigoSeed {
 // Editá esta lista con los 6 integrantes reales antes de correr `npm run seed`.
 const amigos: AmigoSeed[] = [
   { nombre: "Juan", mail: "glariajuan@gmail.com", esVos: true },
-  { nombre: "Tomas", mail: "tomas@ejemplo.com" },
-  { nombre: "Lautaro", mail: "lautaro@ejemplo.com" },
-  { nombre: "Bruno", mail: "bruno@ejemplo.com" },
-  { nombre: "Amigo5", mail: "amigo5@ejemplo.com" },
-  { nombre: "Amigo6", mail: "amigo6@ejemplo.com" },
+  { nombre: "Tomas", mail: "glariajuan+tomas@gmail.com" },
+  { nombre: "Lautaro", mail: "glariajuan+lautaro@gmail.com" },
+  { nombre: "Bruno", mail: "glariajuan+bruno@gmail.com" },
+  { nombre: "Amigo5", mail: "glariajuan+amigo5@gmail.com" },
+  { nombre: "Amigo6", mail: "glariajuan+amigo6@gmail.com" },
 ];
 
 const insert = db.prepare(
