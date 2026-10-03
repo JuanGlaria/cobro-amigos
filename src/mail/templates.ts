@@ -33,7 +33,6 @@ export function cuerpoCuota(opts: {
 
   lineas.push("");
   if (config.aliasPago) lineas.push(`Alias: ${config.aliasPago}`);
-  if (config.cbuPago) lineas.push(`CBU: ${config.cbuPago}`);
   lineas.push("");
   lineas.push("Gracias!");
 

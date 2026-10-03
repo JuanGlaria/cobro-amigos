@@ -1,6 +1,7 @@
 import { Bot } from "grammy";
 import { config } from "../config";
 import { logger } from "../utils/logger";
+import { db } from "../db";
 import { parseMonto, redondearArriba50, formatoPesos, difierePorcentaje } from "../utils/dinero";
 import {
   crearMesSiNoExiste,
@@ -271,4 +272,31 @@ bot.command("historial", async (ctx) => {
 
 bot.catch((err) => {
   logger.error("error en el bot:", err);
+});
+
+bot.command("iniciarmes", async (ctx) => {
+  const mes = mesActual();
+  if (mes && mes.estado !== "enviado") {
+    await ctx.reply(`Ya hay un mes en curso (${nombreMes(mes.mes)}, estado: ${mes.estado}). No hace falta iniciar otro.`);
+    return;
+  }
+  const ahora = new Date();
+  await preguntarPrecioDelMes(ahora.getFullYear(), ahora.getMonth() + 1);
+});
+
+
+bot.command("resetear", async (ctx) => {
+  await ctx.reply(
+    "⚠️ Esto borra TODOS los amigos, meses, movimientos y envíos. No se puede deshacer.\n" +
+      "Si estás seguro, mandá /resetear_confirmar"
+  );
+});
+
+bot.command("resetear_confirmar", async (ctx) => {
+  db.exec("DELETE FROM mail_envios");
+  db.exec("DELETE FROM movimientos");
+  db.exec("DELETE FROM meses");
+  db.exec("DELETE FROM amigos");
+  db.exec("DELETE FROM sqlite_sequence"); // reinicia los autoincrement a 1
+  await ctx.reply("Listo, base reseteada. Corré el seed de nuevo si hace falta.");
 });
