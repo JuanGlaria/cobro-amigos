@@ -30,9 +30,9 @@ No compartas esa contraseña, es equivalente a la de tu cuenta para ese uso punt
      y buscá `"chat":{"id": ...}` en la respuesta.
 2. El bot ignora cualquier mensaje que no venga de ese chat ID, así que solo vos podés operarlo.
 
-## Alias/CBU (`ALIAS_PAGO`, `CBU_PAGO`)
+## Alias (`ALIAS_PAGO`)
 
-Van tal cual los usás para que te transfieran. Van en `.env`, no en la base de datos ni en el código, porque no cambian mes a mes.
+Va tal cual lo usás para que te transfieran. Van en `.env`, no en la base de datos ni en el código, porque no cambian mes a mes.
 
 ## Después de completar el `.env`
 

@@ -13,7 +13,6 @@ export const config = {
   telegramBotToken: required("TELEGRAM_BOT_TOKEN"),
   telegramChatId: required("TELEGRAM_CHAT_ID"),
   aliasPago: process.env.ALIAS_PAGO ?? "",
-  cbuPago: process.env.CBU_PAGO ?? "",
   dbPath: path.resolve(process.env.DB_PATH ?? "./data/cobro-amigos.db"),
   backupDir: path.resolve(process.env.BACKUP_DIR ?? "./backups"),
   backupDiasRetencion: Number(process.env.BACKUP_DIAS_RETENCION ?? 14),

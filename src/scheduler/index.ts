@@ -13,9 +13,9 @@ export function iniciarScheduler(): void {
     { timezone: config.timezone }
   );
 
-  // Cada hora: si el mes sigue "pendiente", recuerda.
+  // Cada hora de 9 a 22: si el mes sigue "pendiente", recuerda.
   cron.schedule(
-    "0 * * * *",
+    "0 9-22 * * *",
     () => {
       recordarPrecioPendiente();
     },

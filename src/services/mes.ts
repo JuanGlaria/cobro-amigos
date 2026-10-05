@@ -49,10 +49,9 @@ export function crearMesSiNoExiste(anio: number, mes: number): Mes {
   return db.prepare("SELECT * FROM meses WHERE id = ?").get(info.lastInsertRowid) as Mes;
 }
 
-const CANTIDAD_PLAN = 6;
+export const CANTIDAD_PLAN = 6;
 
 export function proponerPrecio(mesId: number, precioTotal: number): Mes {
-  const cantidadPersonas = listarActivos().length;
   const cuota = redondearArriba50(precioTotal / CANTIDAD_PLAN);
   db.prepare(
     "UPDATE meses SET precio_propuesto = ?, cuota_propuesta = ?, estado = 'esperando_confirmacion' WHERE id = ?"

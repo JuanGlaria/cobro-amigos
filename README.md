@@ -5,8 +5,8 @@ Bot de Telegram que cobra la cuota mensual de YouTube Premium a los amigos del p
 ## Instalación en el server (Ubuntu 24.04, Node 22)
 
 ```bash
-git clone <tu-repo> ~/cobro-amigos
-cd ~/cobro-amigos
+git clone <tu-repo> ~/projects/cobro-amigos
+cd ~/projects/cobro-amigos
 npm install
 cp .env.example .env
 chmod 600 .env
@@ -62,7 +62,7 @@ sudo systemctl start cobro-amigos
 
 ## Reglas de negocio implementadas
 
-- Cuota = precio total ÷ cantidad de amigos activos (vos incluido), redondeada hacia arriba al múltiplo de $50.
+- Cuota fija = precio total ÷ 6 (`CANTIDAD_PLAN` en `src/services/mes.ts`), redondeada hacia arriba al múltiplo de $50. No cambia si hay menos de 6 amigos activos.
 - El mes queda "pendiente" hasta que confirmás el precio por Telegram; recién ahí se cargan las deudas y se mandan los mails.
 - Sin pagos parciales: marcar pagado salda toda la deuda acumulada del amigo.
 - Deuda no pagada se arrastra sola al mes siguiente (no hay lógica especial, es un ledger corrido).

@@ -11,11 +11,12 @@ import {
   ultimoMesConfirmado,
   mesActual,
   nombreMes,
-  cancelarMesCompleto
+  cancelarMesCompleto,
+  CANTIDAD_PLAN,
 } from "../services/mes";
 import { enviarMailsDelMes } from "../services/envios";
+import { hacerBackup } from "../backup";
 import {
-  listarActivos,
   listarDeudas,
   altaAmigo,
   bajaAmigo,
@@ -64,10 +65,7 @@ export async function recordarPrecioPendiente(): Promise<void> {
 
 export async function preguntarQuienPago(): Promise<void> {
   const deudores = listarDeudas();
-  if (deudores.length === 0) {
-    await bot.api.sendMessage(config.telegramChatId, "Nadie debe nada por ahora.");
-    return;
-  }
+  if (deudores.length === 0) return;
   await bot.api.sendMessage(config.telegramChatId, "¿Quién pagó? Tildá a los que pagaron y tocá Confirmar.", {
     reply_markup: teclaPagos(deudores),
   });
@@ -113,11 +111,10 @@ bot.on("message:text").filter(
     }
 
     const actualizado = proponerPrecio(mes.id, monto);
-    const cantidadPersonas = 6;
     await ctx.reply(
       `Total ${formatoPesos(monto)}, cuota ${formatoPesos(
         actualizado.cuota_propuesta!
-      )} por persona (÷${cantidadPersonas}).${avisoDiferencia}\n¿Confirmo?`,
+      )} por persona (÷${CANTIDAD_PLAN}).${avisoDiferencia}\n¿Confirmo?`,
       { reply_markup: teclaConfirmarPrecio() }
     );
   }
@@ -302,10 +299,6 @@ bot.command("historial", async (ctx) => {
   await ctx.reply(texto);
 });
 
-bot.catch((err) => {
-  logger.error("error en el bot:", err);
-});
-
 bot.command("iniciarmes", async (ctx) => {
   const mes = mesActual();
   if (mes && mes.estado !== "enviado") {
@@ -325,12 +318,22 @@ bot.command("resetear", async (ctx) => {
 });
 
 bot.command("resetear_confirmar", async (ctx) => {
-  db.exec("DELETE FROM mail_envios");
-  db.exec("DELETE FROM movimientos");
-  db.exec("DELETE FROM meses");
-  db.exec("DELETE FROM amigos");
-  db.exec("DELETE FROM sqlite_sequence"); // reinicia los autoincrement a 1
-  await ctx.reply("Listo, base reseteada. Corré el seed de nuevo si hace falta.");
+  let backup: string;
+  try {
+    backup = hacerBackup("pre-reset");
+  } catch (err) {
+    logger.error("falló el backup previo al reset:", err);
+    await ctx.reply("No pude hacer el backup previo, así que NO reseteé nada.");
+    return;
+  }
+  db.transaction(() => {
+    db.exec("DELETE FROM mail_envios");
+    db.exec("DELETE FROM movimientos");
+    db.exec("DELETE FROM meses");
+    db.exec("DELETE FROM amigos");
+    db.exec("DELETE FROM sqlite_sequence"); // reinicia los autoincrement a 1
+  })();
+  await ctx.reply(`Listo, base reseteada. Backup previo: ${backup}\nCorré el seed de nuevo si hace falta.`);
 });
 
 
@@ -346,4 +349,8 @@ bot.command("cancelarmes", async (ctx) => {
   }
   cancelarMesCompleto(mes.id);
   await ctx.reply("Cancelado. Ya podés agregar/sacar amigos y arrancar de nuevo con /iniciarmes.");
+});
+
+bot.catch((err) => {
+  logger.error("error en el bot:", err);
 });
