@@ -183,6 +183,24 @@ bot.callbackQuery("confirmar_pagos", async (ctx) => {
 
 // --- comandos ---
 
+bot.command("ayuda", async (ctx) => {
+  await ctx.reply(
+    [
+      "/estado — estado del mes actual",
+      "/deudas — quién debe y cuánto",
+      "/pagos — marcar quién pagó",
+      "/historial <nombre> — movimientos de un amigo",
+      "/altaamigo <nombre> <mail> — agregar amigo",
+      "/bajaamigo <nombre> — dar de baja",
+      "/reenviar <nombre> — reenviar el mail del mes",
+      "/reintentar — reintentar mails fallidos",
+      "/iniciarmes — arrancar el mes a mano",
+      "/cancelarmes — cancelar un mes sin confirmar",
+      "/resetear — borrar toda la base (con backup previo)",
+    ].join("\n")
+  );
+});
+
 bot.command("deudas", async (ctx) => {
   const deudores = listarDeudas();
   if (deudores.length === 0) {

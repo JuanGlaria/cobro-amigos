@@ -4,6 +4,12 @@ Bot de Telegram que cobra la cuota mensual de YouTube Premium a los amigos del p
 
 ## Instalación en el server (Ubuntu 24.04, Node 22)
 
+`better-sqlite3` compila código nativo, así que primero instalá las herramientas de compilación:
+
+```bash
+sudo apt install -y build-essential python3
+```
+
 ```bash
 git clone <tu-repo> ~/projects/cobro-amigos
 cd ~/projects/cobro-amigos

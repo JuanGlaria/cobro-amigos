@@ -1,6 +1,6 @@
 import "./db";
 import { listarActivos, getDeuda } from "./services/amigos";
-import { ultimoMesConfirmado, nombreMes } from "./services/mes";
+import { ultimoMesConfirmado, nombreMes, CANTIDAD_PLAN } from "./services/mes";
 import { redondearArriba50, formatoPesos } from "./utils/dinero";
 import { asuntoCuota, cuerpoCuota } from "./mail/templates";
 
@@ -17,7 +17,7 @@ const anio = ahora.getFullYear();
 const mes = ahora.getMonth() + 1;
 
 const activos = listarActivos();
-const cuota = redondearArriba50(monto / activos.length);
+const cuota = redondearArriba50(monto / CANTIDAD_PLAN);
 
 console.log(`--- DRY RUN (no escribe nada, no manda mails) ---`);
 console.log(`Mes: ${nombreMes(mes)} ${anio}`);
