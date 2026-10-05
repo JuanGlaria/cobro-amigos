@@ -34,6 +34,8 @@ export function cuerpoCuota(opts: {
   lineas.push("");
   if (config.aliasPago) lineas.push(`Alias: ${config.aliasPago}`);
   lineas.push("");
+  lineas.push("Pasame el comprobante por mail (respondiendo este correo) o por WhatsApp. Si no lo mandás, no confirmo el pago.");
+  lineas.push("");
   lineas.push("Gracias!");
 
   return lineas.join("\n");
